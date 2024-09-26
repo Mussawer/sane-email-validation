@@ -5,6 +5,7 @@ const isAsciiEmail = require('../index').isAsciiEmail
 const isEmail = require('../index')
 const isNotAsciiEmail = require('../index').isNotAsciiEmail
 const isNotEmail = require('../index').isNotEmail
+const isBusinessEmail = require('../index').isBusinessEmail
 
 describe('isEmail', () => {
   it('empty', () => {
@@ -191,5 +192,50 @@ describe('isNotAsciiEmail', () => {
       'Should accept 63 character domain labels.')
     assert.strictEqual(isNotAsciiEmail(".!#$%&'*+/=?^_`{|}~-a9@example.com"), false,
       'Should accept certain special characters in local address.')
+  })
+})
+
+describe('isBusinessEmail', () => {
+  // Tests isBusinessEmail function for accepting valid business email domains
+  it('should return true for valid business emails', () => {
+    assert.strictEqual(isBusinessEmail('user@example.com'), true)
+    assert.strictEqual(isBusinessEmail('info@nonprofit.org'), true)
+    assert.strictEqual(isBusinessEmail('sales@company.net'), true)
+  })
+
+  // Tests isBusinessEmail function for rejecting non-business email domains
+  it('should return false for non-business emails', () => {
+    assert.strictEqual(isBusinessEmail('user@example.edu'), false)
+    assert.strictEqual(isBusinessEmail('person@gmail.com'), false)
+    assert.strictEqual(isBusinessEmail('name@website.io'), false)
+  })
+
+  // Tests isBusinessEmail function for rejecting invalid email formats
+  it('should return false for invalid emails', () => {
+    assert.strictEqual(isBusinessEmail('not-an-email'), false)
+    assert.strictEqual(isBusinessEmail('missing@domain'), false)
+    assert.strictEqual(isBusinessEmail('@missinglocal.com'), false)
+  })
+})
+
+describe('isEmail additional edge cases', () => {
+  // Tests isEmail function for rejecting multiple @ symbols in email addresses
+  it('should handle email addresses with multiple @ symbols', () => {
+    assert.strictEqual(isEmail('user@domain@example.com'), false)
+  })
+
+  // Tests isEmail function for rejecting spaces in various parts of email addresses
+  it('should reject email addresses with spaces', () => {
+    assert.strictEqual(isEmail('test user@example.com'), false)
+    assert.strictEqual(isEmail('test@exam ple.com'), false)
+    assert.strictEqual(isEmail(' test@example.com'), false)
+    assert.strictEqual(isEmail('test@example.com '), false)
+  })
+
+  // Tests isEmail function for accepting plus addressing in the local part of email addresses
+  it('should handle email addresses with plus addressing', () => {
+    assert.strictEqual(isEmail('test+label@example.com'), true)
+    assert.strictEqual(isEmail('test+123+456@example.com'), true)
+    assert.strictEqual(isEmail('test++label@example.com'), true)
   })
 })
