@@ -81,3 +81,15 @@ exports.isNotEmail = (string) => {
 exports.isNotAsciiEmail = (string) => {
   return !methods.isAsciiEmail(string)
 }
+
+// Validates if an email address is likely to be a business email by checking domain and
+// excluding common free email providers
+exports.isBusinessEmail = (string) => {
+  if (!methods.isEmail(string)) {
+    return false
+  }
+  const domain = string.split('@')[1].toLowerCase()
+  const businessDomains = /\.(com|org|net|biz)$/i
+  const freeEmailProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com']
+  return businessDomains.test(domain) && !freeEmailProviders.includes(domain)
+}
